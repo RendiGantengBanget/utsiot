@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UTS PEMROGRAMAN IOT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> <!-- Menghubungkan CSS -->
+</head>
+<body>
+    <div class="container">
+        <h1>UTS PEMROGRAMAN IOT</h1>
+
+        <!-- Section Summary Data -->
+        <div class="data-section">
+            <h2>Summary Data</h2>
+            <div class="data-box-container">
+                <div class="data-box">
+                    <p class="label">Suhu Max</p>
+                    <p id="suhumax"></p>
+                </div>
+                <div class="data-box">
+                    <p class="label">Suhu Min</p>
+                    <p id="suhumin"></p>
+                </div>
+                <div class="data-box">
+                    <p class="label">Rata-rata</p>
+                    <p id="suhurata"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Nilai Suhu Max Humid Max -->
+        <div class="data-section">
+            <h2>Nilai Suhu Max Humid Max</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Index</th>
+                        <th>Suhu</th>
+                        <th>Humid</th>
+                        <th>Kecerahan</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody id="nilai-suhu-max-humid-max">
+                    <!-- Data akan dimuat di sini melalui JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section Month Year Max -->
+        <div class="data-section">
+            <h2>Month Year Max</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Month Year</th>
+                    </tr>
+                </thead>
+                <tbody id="month-year-max">
+                    <!-- Data akan dimuat di sini melalui JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Fungsi untuk mengambil dan menampilkan data dari API
+        async function fetchData() {
+            try {
+                const response = await fetch('/api/data');
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+
+                // Menampilkan summary data
+                document.getElementById('suhumax').textContent = data.suhumax;
+                document.getElementById('suhumin').textContent = data.suhumin;
+                document.getElementById('suhurata').textContent = data.suhurata;
+
+                // Menampilkan nilai_suhu_max_humid_max
+                const suhuContainer = document.getElementById('nilai-suhu-max-humid-max');
+                data.nilai_suhu_max_humid_max.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.idx}</td>
+                        <td>${item.suhu}</td>
+                        <td>${item.humid}</td>
+                        <td>${item.kecerahan}</td>
+                        <td>${item.timestamp}</td>
+                    `;
+                    suhuContainer.appendChild(row);
+                });
+
+                // Menampilkan month_year_max
+                const monthYearContainer = document.getElementById('month-year-max');
+                data.month_year_max.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td>${item.month_year}</td>`;
+                    monthYearContainer.appendChild(row);
+                });
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        // Panggil fetchData saat halaman dimuat
+        fetchData();
+    </script>
+</body>
+</html>
